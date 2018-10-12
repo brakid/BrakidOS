@@ -35,11 +35,26 @@ class Io {
         static void print(
                 const char* text,
                 byte inTextColor = WHITE);
-        /*static void print(
-                const int number,
-                byte inTextColor = WHITE);*/ // requires malloc for number to text conversion
+        static void print(
+                char character,
+                byte inTextColor = WHITE);
+        static void print(
+                byte number,
+                byte inTextColor = WHITE);
+        static void print(
+                uint32_t number,
+                byte inTextColor = WHITE);
         static void println(
                 const char* text,
+                byte inTextColor = WHITE);
+        static void println(
+                char character,
+                byte inTextColor = WHITE);
+        static void println(
+                byte number,
+                byte inTextColor = WHITE);
+        static void println(
+                uint32_t number,
                 byte inTextColor = WHITE);
 };
 #endif
