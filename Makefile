@@ -23,6 +23,6 @@ $(BINARY): $(KERNEL_SRC) $(BOOTLOADER_TARGET)
 bootdisk: $(BINARY)
 	dd if=/dev/zero of=$(DISK) bs=512 count=2880 ; dd conv=notrunc if=$(BINARY) of=$(DISK) bs=512 seek=0
 run: $(BINARY)
-	qemu-system-i386 -machine q35 -fda $(BINARY)
+	qemu-system-i386 -machine q35 -fda $(BINARY) -m 1G
 rungdb: $(BINARY)
-	qemu-system-i386 -machine q35 -fda $(BINARY) -gdb tcp::26000 -S
+	qemu-system-i386 -machine q35 -fda $(BINARY) -gdb tcp::26000 -S -m 1G

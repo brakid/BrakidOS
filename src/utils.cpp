@@ -1,5 +1,7 @@
 #include "utils.h"
 
+uint32_t criticalCounter = 0;
+
 char digitToChar(byte digit) {
     switch(digit) {
         case 1: return '1';
@@ -57,4 +59,16 @@ void disableInterupts() {
 
 void enableInterupts() {
     asm("sti");
+}
+
+void enterCritical() {
+    disableInterupts();
+    criticalCounter++;
+}
+
+void leaveCritical() {
+    criticalCounter--;
+    if (criticalCounter == 0) {
+        enableInterupts();
+    }
 }

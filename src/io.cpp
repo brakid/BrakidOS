@@ -38,16 +38,18 @@ void newLine() {
 void print(
         const char* string, 
         byte color) {
+    enterCritical();
     while(*string != 0) {
         char character = *string++;
         print(character, color);
     }
+    leaveCritical();
 }
 
 void print( 
         char character, 
         byte color) {
-    disableInterupts();
+    enterCritical();
     volatile char* video = (volatile char*) VIDEO_POSITION;
     video += (row * COLUMNS + column) * sizeof(char) * 2;
     
@@ -70,7 +72,7 @@ void print(
     }
     scrollScreen();
     updateCursor(row, column);
-    enableInterupts();
+    leaveCritical();
 }
 
 void print(
@@ -82,16 +84,19 @@ void print(
 void print(
         int number,
         byte color) {
+    enterCritical();
     if (number < 0) {
         print('-', color);
         number *= -1;
     }
     print((uint32_t)number, color);
+    leaveCritical();
 }
 
 void print(
         uint32_t number,
         byte color) {
+    enterCritical();
     uint32_t compare = 0; //1000000000, HEX: 0x3b9aca00
     uint32_t address = (uint32_t)&compare;
     byte* bytes = (byte*)address;
@@ -112,6 +117,7 @@ void print(
             hasPrinted = true;
         }
     }
+    leaveCritical();
 }
 
 void println( 
@@ -149,6 +155,7 @@ void println(
 }
 
 void clearScreen() {
+    enterCritical();
     uint16_t blank = 0x20 | WHITE << 8;
 
     volatile char* video = (volatile char*) VIDEO_POSITION;
@@ -156,4 +163,5 @@ void clearScreen() {
     row = 0;
     column = 0;
     updateCursor(row, column);
+    leaveCritical();
 }

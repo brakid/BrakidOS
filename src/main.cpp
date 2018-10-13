@@ -6,13 +6,13 @@
 #include "keyboard.h"
 
 void setup() {
-    disableInterupts();
+    enterCritical();
     // GDT is instantiated by bootloader
     installIdt();
     installTimer();
     installKeyboard();
 
-    enableInterupts();
+    leaveCritical();
 }
 
 extern "C" void main() {
