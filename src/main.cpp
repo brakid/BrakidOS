@@ -26,5 +26,12 @@ extern "C" void main() {
     wait(5000);
     println("Slept 5s");
     print("Last Character: ");
-    println(getLastCharacter());
+    char c = 0;
+    while (c != '\n') {
+        if (c != 0) {
+            print(c);
+        }
+        c = getLastCharacter();
+    }
+    println("\nTerminate");
 }

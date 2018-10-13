@@ -40,9 +40,6 @@ void print(
         byte color) {
     while(*string != 0) {
         char character = *string++;
-        if (character == '\n') {
-            newLine();
-        }
         print(character, color);
     }
 }
@@ -54,10 +51,18 @@ void print(
     volatile char* video = (volatile char*) VIDEO_POSITION;
     video += (row * COLUMNS + column) * sizeof(char) * 2;
     
-    *video++ = character;
-    *video++ = color;
-    column++;
-    
+    if (character == '\n') {
+        newLine();
+    } else if (character == '\t') {
+        for (int i = 0; i < TAB_WIDTH; i++) {
+            print(' ', color);
+        }
+    } else {
+        *video++ = character;
+        *video++ = color;
+        column++;
+    }
+
     if (column > COLUMNS) {
         byte rows = column / COLUMNS;
         column -= rows * COLUMNS;

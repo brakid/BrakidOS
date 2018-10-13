@@ -26,6 +26,8 @@
 #define ROWS 25
 #define COLUMNS 80
 
+#define TAB_WIDTH 4
+
 #include "types.h"
 #include "string.h"
 
