@@ -10,10 +10,16 @@ byte column = 0;
 void update_cursor(byte row, byte column){
     int position = (row * COLUMNS + column);
  
-    Ports::port_byte_out(VGA_INDEX_REGISTER, 0x0F);
-    Ports::port_byte_out(VGA_DATA_REGISTER, (uint8_t) (position & 0xFF));
-    Ports::port_byte_out(VGA_INDEX_REGISTER, 0x0E);
-    Ports::port_byte_out(VGA_DATA_REGISTER, (uint8_t) ((position >> 8) & 0xFF));
+    port_byte_out(VGA_INDEX_REGISTER, 0x0F);
+    port_byte_out(VGA_DATA_REGISTER, (uint8_t) (position & 0xFF));
+    port_byte_out(VGA_INDEX_REGISTER, 0x0E);
+    port_byte_out(VGA_DATA_REGISTER, (uint8_t) ((position >> 8) & 0xFF));
+}
+
+void new_line() {
+    row++;
+    column = 0;
+    update_cursor(row, column);
 }
 
 void printOffset(
@@ -43,13 +49,13 @@ void printOffset(
     update_cursor(row, column);
 }
 
-void Io::print( 
+void print( 
         const char* string, 
         byte color) {
     printOffset(row, column, string, color);
 }
 
-void Io::print( 
+void print( 
         char character, 
         byte color) {
     volatile char* video = (volatile char*) VIDEO_POSITION;
@@ -70,13 +76,23 @@ void Io::print(
     update_cursor(row, column);
 }
 
-void Io::print(
+void print(
         byte number,
         byte color) {
-    Io::print((uint32_t)number, color);
+    print((uint32_t)number, color);
 }
 
-void Io::print(
+void print(
+        int number,
+        byte color) {
+    if (number < 0) {
+        print('-', color);
+        number *= -1;
+    }
+    print((uint32_t)number, color);
+}
+
+void print(
         uint32_t number,
         byte color) {
     uint32_t compare = 1000000000;
@@ -86,53 +102,51 @@ void Io::print(
         number -= digit * compare;
         compare /= 10;
         if (digit != 0 || hasPrinted == true || compare == 0) {
-            Io::print(Utils::digitToChar(digit), color);
+            print(digitToChar(digit), color);
             hasPrinted = true;
         }
     }
 }
 
-void Io::println( 
+void println( 
         const char* string, 
         byte color) {
     printOffset(row, column, string, color);
-    row++;
-    column = 0;
-    update_cursor(row, column);
+    new_line();
 }
 
-void Io::println( 
+void println( 
         char character, 
         byte color) {
-    Io::print(character, color);
-    row++;
-    column = 0;
-    update_cursor(row, column);
+    print(character, color);
+    new_line();
 }
 
-void Io::println(
+void println(
         byte number,
         byte color) {
-    Io::println((uint32_t)number, color);
+    println((uint32_t)number, color);
 }
 
-void Io::println(
+void println(
+        int number,
+        byte color) {
+    print(number, color);
+    new_line();
+}
+
+void println(
         uint32_t number,
         byte color) {
-    Io::print(number, color);
-    row++;
-    column = 0;
-    update_cursor(row, column);
+    print(number, color);
+    new_line();
 }
 
-void Io::clearScreen() {
+void clearScreen() {
+    uint16_t blank = 0x20 | WHITE << 8;
+
     volatile char* video = (volatile char*) VIDEO_POSITION;
-    int count = 0;
-    while(count < ROWS * COLUMNS) {
-        *video++ = ' ';
-        *video++ = WHITE;
-        count++;
-    }
+    memset((uint16_t*)video, blank, 80 * 25);
     row = 0;
     column = 0;
     update_cursor(row, column);

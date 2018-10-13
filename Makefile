@@ -18,7 +18,7 @@ $(BOOTLOADER_TARGET): $(BOOTLOADER_SRC)
 	nasm -f elf32 $(BOOTLOADER_SRC) -o $(BOOTLOADER_TARGET)
 
 $(BINARY): $(KERNEL_SRC) $(BOOTLOADER_TARGET)
-	i386-elf-gcc $(KERNEL_SRC) $(BOOTLOADER_TARGET) -o $(BINARY) $(DEBUG) -nostdlib -ffreestanding -std=c++11 -mno-red-zone -fno-exceptions -fno-rtti -Wall -Werror -Wextra -T linker.ld -masm=intel
+	i386-elf-gcc $(KERNEL_SRC) $(BOOTLOADER_TARGET) -o $(BINARY) $(DEBUG) -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin -nostdlib -ffreestanding -std=c++11 -mno-red-zone -fno-exceptions -fno-rtti -Wall -Werror -Wextra -T linker.ld -masm=intel
 
 bootdisk: $(BINARY)
 	dd if=/dev/zero of=$(DISK) bs=512 count=2880 ; dd conv=notrunc if=$(BINARY) of=$(DISK) bs=512 seek=0

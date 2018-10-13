@@ -1,6 +1,6 @@
 #include "string.h"
 
-byte String::strlen(const char* string) {
+byte strlen(const char* string) {
     byte lenghtOfString = 0;
      
     while(*string++ != '\0') {

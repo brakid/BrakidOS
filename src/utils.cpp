@@ -1,6 +1,6 @@
 #include "utils.h"
 
-char Utils::digitToChar(byte digit) {
+char digitToChar(byte digit) {
     switch(digit) {
         case 1: return '1';
         case 2: return '2';
@@ -14,4 +14,40 @@ char Utils::digitToChar(byte digit) {
         case 0: return '0';
         default: return ' ';
     }
+}
+
+byte* memcpy(byte* dest, const byte* src, uint32_t count) {
+    while (count-- > 0) {
+        *dest++ = *src++;
+    }
+    return dest;
+}
+        
+byte* memset(byte* dest, byte val, uint32_t count) {
+    while (count-- > 0) {
+        *dest++ = val;
+    }
+    return dest;
+}
+
+uint16_t* memset(uint16_t* dest, uint16_t val, uint32_t count) {
+    while (count-- > 0) {
+        *dest++ = val;
+    }
+    return dest;
+}
+        
+uint32_t* memset(uint32_t* dest, uint32_t val, uint32_t count) {
+    while (count-- > 0) {
+        *dest++ = val;
+    }
+    return dest;
+}
+
+void disableInterupts() {
+    asm volatile ("cli");
+}
+
+void enableInterupts() {
+    asm volatile ("sti");
 }

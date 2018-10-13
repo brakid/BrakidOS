@@ -29,32 +29,35 @@
 #include "types.h"
 #include "string.h"
 
-class Io {
-    public:
-        static void clearScreen();
-        static void print(
-                const char* text,
-                byte inTextColor = WHITE);
-        static void print(
-                char character,
-                byte inTextColor = WHITE);
-        static void print(
-                byte number,
-                byte inTextColor = WHITE);
-        static void print(
-                uint32_t number,
-                byte inTextColor = WHITE);
-        static void println(
-                const char* text,
-                byte inTextColor = WHITE);
-        static void println(
-                char character,
-                byte inTextColor = WHITE);
-        static void println(
-                byte number,
-                byte inTextColor = WHITE);
-        static void println(
-                uint32_t number,
-                byte inTextColor = WHITE);
-};
+void clearScreen();
+void print(
+        const char* text,
+        byte inTextColor = WHITE);
+void print(
+        char character,
+        byte inTextColor = WHITE);
+void print(
+        byte number,
+        byte inTextColor = WHITE);
+void print(
+        int number,
+        byte inTextColor = WHITE);
+void print(
+        uint32_t number,
+        byte inTextColor = WHITE);
+void println(
+        const char* text,
+        byte inTextColor = WHITE);
+void println(
+        char character,
+        byte inTextColor = WHITE);
+void println(
+        byte number,
+        byte inTextColor = WHITE);
+void println(
+        int number,
+        byte inTextColor = WHITE);
+void println(
+        uint32_t number,
+        byte inTextColor = WHITE);
 #endif
