@@ -22,6 +22,13 @@ byte* memcpy(byte* dest, const byte* src, uint32_t count) {
     }
     return dest;
 }
+
+uint16_t* memcpy(uint16_t* dest, const uint16_t* src, uint32_t count) {
+    while (count-- > 0) {
+        *dest++ = *src++;
+    }
+    return dest;
+}
         
 byte* memset(byte* dest, byte val, uint32_t count) {
     while (count-- > 0) {
@@ -45,9 +52,9 @@ uint32_t* memset(uint32_t* dest, uint32_t val, uint32_t count) {
 }
 
 void disableInterupts() {
-    asm volatile ("cli");
+    asm("cli");
 }
 
 void enableInterupts() {
-    asm volatile ("sti");
+    asm("sti");
 }

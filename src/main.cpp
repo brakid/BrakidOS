@@ -20,5 +20,7 @@ extern "C" void main() {
     println("          =========================");
     println("          * BrakidOS - Experiment *");
     println("          =========================");
-    print("Hello world!");
+    println("Hello world!");
+    wait(5000);
+    println("Slept 5s");
 }

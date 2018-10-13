@@ -64,16 +64,7 @@ boot2:
     mov esp, kernel_stack_top
     extern main
     call main
-    cli
-    hlt
-
-global idtLoad
-idtLoad:
-    ;lidt [idtp]
-    ;ret
-    mov eax, [esp + 4]
-    lidt [eax]
-    ret
+    jmp $ ;endless loop
 
 %macro isr_noerr 1
 global isr%1
@@ -177,8 +168,6 @@ irqs 15, 47
 
 extern irqHandler
 
-; This is a stub that we have created for IRQ based ISRs. This calls
-; '_irq_handler' in our C code. We need to create this in an 'irq.c'
 irq_common_stub:
     pusha
     push ds

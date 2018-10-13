@@ -4,6 +4,7 @@
 #include "idt.h"
 #include "ports.h"
 #include "regs.h"
+#include "irqs.h"
 
 /* These are function prototypes for all of the exception
 *  handlers: The first 32 entries in the IDT are reserved
@@ -27,14 +28,17 @@ extern "C" void irq15();
 
 // remap: http://www.osdever.net/bkerndev/Docs/irqs.htm
 void irqRemap() {
+    // mapping IRQ0 -> 32
     port_byte_out(0x20, 0x11);
     port_byte_out(0xA0, 0x11);
-    port_byte_out(0x21, 0x20);
-    port_byte_out(0xA1, 0x28);
+    port_byte_out(0x21, IRQ_OFFSET);
+    port_byte_out(0xA1, IRQ_OFFSET + 8);
     port_byte_out(0x21, 0x04);
     port_byte_out(0xA1, 0x02);
     port_byte_out(0x21, 0x01);
     port_byte_out(0xA1, 0x01);
+
+    // enable (masking all IRQS as 0 = enabled)
     port_byte_out(0x21, 0x0);
     port_byte_out(0xA1, 0x0);
 }
@@ -46,7 +50,7 @@ uint32_t irqRoutines[16] =
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void installIrqHandler(int irq, void (*handler)(int)) {
+void installIrqHandler(int irq, void (*handler)(Registers*)) {
     irqRoutines[irq] = (uint32_t)handler;
 }
 
@@ -76,14 +80,13 @@ void installIrqs() {
 }
 
 extern "C" void irqHandler(Registers* registers) {
-    println("Here");
     uint32_t irqNumber = registers->interuptNumber;
+    
+    void (*handler)(Registers*);
 
-    void (*handler)(int);
-
-    handler = (void (*)(int))irqRoutines[irqNumber];
+    handler = (void (*)(Registers*))irqRoutines[irqNumber - IRQ_OFFSET];
     if (handler != 0) {
-        handler(irqNumber);
+        handler((Registers*)registers);
     }
 
     /* If the IDT entry that was invoked was greater than 40
