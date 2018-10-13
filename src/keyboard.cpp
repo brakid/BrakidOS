@@ -4,6 +4,7 @@
 #include "io.h"
 #include "irqs.h"
 #include "types.h"
+#include "utils.h"
 
 char lastCharacter = 0;
 
@@ -69,4 +70,22 @@ char getLastCharacter() {
 void installKeyboard(){
     // IRQ1: keyboard
     installIrqHandler(1, handleKeyboard);
+}
+
+char* scan(int maxLength, char* pointer) {
+    memset((byte*)pointer, 0, maxLength);
+    int length = 0;
+    char* currentPosition = pointer;
+    char lastCharacter = 0;
+
+    while (lastCharacter != '\n' && length < maxLength) {
+        if (lastCharacter != 0) {
+            print(lastCharacter);
+            *currentPosition++ = lastCharacter;
+            length++;
+        }
+        lastCharacter = getLastCharacter();
+    }
+
+    return pointer;
 }

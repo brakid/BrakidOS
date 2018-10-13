@@ -39,12 +39,12 @@ byte getProcessId(byte* memoryTableEntry) {
 
 uint32_t* getMemoryPointerFromMemoryTablePointer(byte* memoryTableEntry) {
     uint32_t difference = (uint32_t)memoryTableEntry - HEAP_START;
-    return (uint32_t*)((MEMORY_TABLE_END + 1) + sizeof(uint32_t) * difference);
+    return (uint32_t*)((MEMORY_TABLE_END + 1) + ALLOCATION_SIZE * difference);
 }
 
 byte* getMemoryTablePointerForMemoryPointer(uint32_t* memory) {
     uint32_t difference = (uint32_t)memory - (MEMORY_TABLE_END + 1);
-    return (byte*)(HEAP_START + difference / sizeof(uint32_t));
+    return (byte*)(HEAP_START + difference / ALLOCATION_SIZE);
 }
  
 void reserveMemory(uint32_t* pointer, bool shared, byte processId, int size) {

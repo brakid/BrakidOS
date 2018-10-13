@@ -6,4 +6,6 @@ extern byte keyboardUs[128];
 
 void installKeyboard();
 char getLastCharacter();
+
+char* scan(int maxLength, char* pointer);
 #endif

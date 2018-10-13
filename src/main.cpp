@@ -25,25 +25,13 @@ extern "C" void main() {
     println("          =========================");
     println("          * BrakidOS - Experiment *");
     println("          =========================");
-    /*println("Hello world!");
+    println("Hello world!");
     wait(5000);
     println("Slept 5s");
-    print("Last Character: ");
-    char c = 0;
-    while (c != '\n') {
-        if (c != 0) {
-            print(c);
-        }
-        c = getLastCharacter();
-    }
-    println("\nTerminate");*/
-    uint32_t* p1 = malloc(2);
-    println((uint32_t)p1);
-    uint32_t* p2 = malloc(1);
-    println((uint32_t)p2);  //+8
-    free(p1);
-    uint32_t* p3 = malloc(3); // +12
-    println((uint32_t)p3); 
-    uint32_t* p4 = malloc(1); // +0
-    println((uint32_t)p4); 
+    char* userInput = (char*)malloc(100 / sizeof(uint32_t));
+    print(">: ");
+    userInput = scan(100, userInput);
+    println("\nTerminate");
+    println(userInput);
+    free((uint32_t*)userInput);
 }

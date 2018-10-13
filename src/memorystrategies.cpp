@@ -5,7 +5,8 @@
 
 int selected = 0;
 
-uint32_t* findFirst(int size) {
+// using the first chunk with sufficient size
+uint32_t* firstFit(int size) {
     byte* start = (byte*)HEAP_START;
     while (start <= (byte*)MEMORY_TABLE_END) {
         if (!isMemoryUsed(start)) {
@@ -33,7 +34,7 @@ uint32_t* findFirst(int size) {
     return 0;
 }
 
-MemoryStrategy memoryStrategies[1] = {findFirst}; 
+MemoryStrategy memoryStrategies[1] = {firstFit}; 
 
 MemoryStrategy getSelectedMemoryStrategy() {
     return memoryStrategies[selected];
