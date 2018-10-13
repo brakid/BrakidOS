@@ -50,7 +50,7 @@ uint32_t irqRoutines[16] =
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void installIrqHandler(int irq, void (*handler)(Registers*)) {
+void installIrqHandler(int irq, IrqHandler handler) {
     irqRoutines[irq] = (uint32_t)handler;
 }
 
@@ -82,9 +82,7 @@ void installIrqs() {
 extern "C" void irqHandler(Registers* registers) {
     uint32_t irqNumber = registers->interuptNumber;
     
-    void (*handler)(Registers*);
-
-    handler = (void (*)(Registers*))irqRoutines[irqNumber - IRQ_OFFSET];
+    IrqHandler handler = (IrqHandler)irqRoutines[irqNumber - IRQ_OFFSET];
     if (handler != 0) {
         handler((Registers*)registers);
     }

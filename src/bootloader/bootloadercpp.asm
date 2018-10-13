@@ -12,7 +12,7 @@ boot:
     mov [disk],dl
 
     mov ah, 0x2    ;read sectors
-    mov al, 10     ;sectors to read
+    mov al, 65     ;sectors to read
     mov ch, 0      ;cylinder idx
     mov dh, 0      ;head idx
     mov cl, 2      ;sector idx
@@ -31,6 +31,7 @@ boot:
     mov gs, ax
     mov ss, ax
     jmp CODE_SEG:boot2
+
 gdt_start:
     dq 0x0
 gdt_code:

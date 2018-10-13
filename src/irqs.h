@@ -4,7 +4,9 @@
 
 #define IRQ_OFFSET 32
 
-void installIrqHandler(int irq, void (*handler)(Registers*));
+typedef void (*IrqHandler)(Registers*);
+
+void installIrqHandler(int irq, IrqHandler handler);
 void uninstallIrqHandler(int irq);
 void installIrqs();
 #endif

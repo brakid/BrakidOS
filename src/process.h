@@ -6,6 +6,7 @@ enum ProcessState {
 }
 
 struct Process {
+    byte processId;
     uint32_t* programmPointer;
     uint32_t* stackTopPointer;
     ProcessState processState;
