@@ -16,10 +16,12 @@ void setTimerPhase(int frequency){
 /* timer: ~18.22Hz */
 void handleTimer(Registers* registers){
     uint32_t interupt = registers->interuptNumber;
+    interupt++;
+    
     timerTicks++;
 
     if (timerTicks % CLOCK_STEPS_PER_SECOND == 0) {
-        println(interupt);
+        //println(interupt);
     }
 }
 

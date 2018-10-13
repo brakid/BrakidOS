@@ -29,18 +29,18 @@ extern "C" void irq15();
 // remap: http://www.osdever.net/bkerndev/Docs/irqs.htm
 void irqRemap() {
     // mapping IRQ0 -> 32
-    port_byte_out(0x20, 0x11);
-    port_byte_out(0xA0, 0x11);
-    port_byte_out(0x21, IRQ_OFFSET);
-    port_byte_out(0xA1, IRQ_OFFSET + 8);
-    port_byte_out(0x21, 0x04);
-    port_byte_out(0xA1, 0x02);
-    port_byte_out(0x21, 0x01);
-    port_byte_out(0xA1, 0x01);
+    port_byte_out(PIC_1_CTRL, 0x11);
+    port_byte_out(PIC_2_CTRL, 0x11);
+    port_byte_out(PIC_1_DATA, IRQ_OFFSET);
+    port_byte_out(PIC_2_DATA, IRQ_OFFSET + 8);
+    port_byte_out(PIC_1_DATA, 0x04);
+    port_byte_out(PIC_2_DATA, 0x02);
+    port_byte_out(PIC_1_DATA, 0x01);
+    port_byte_out(PIC_2_DATA, 0x01);
 
     // enable (masking all IRQS as 0 = enabled)
-    port_byte_out(0x21, 0x0);
-    port_byte_out(0xA1, 0x0);
+    port_byte_out(PIC_1_DATA, 0x0);
+    port_byte_out(PIC_2_DATA, 0x0);
 }
 
 // pointers to routines for each IRW
