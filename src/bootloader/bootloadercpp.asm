@@ -150,7 +150,12 @@ irq%1:
     jmp irq_common_stub
 %endmacro
 
-irqs 0, 32
+extern timerHandler
+global irq0
+irq0:
+    cli
+    jmp timerHandler
+
 irqs 1, 33
 irqs 2, 34
 irqs 3, 35
@@ -170,26 +175,45 @@ irqs 15, 47
 extern irqHandler
 
 irq_common_stub:
-    pusha
     push ds
     push es
     push fs
     push gs
+    push eax
+    push ebx
+    push ecx
+    push edx
+    push ebp
+    push esi
+    push edi
+    ; push esp
+    mov eax, esp
+    push eax
+    mov eax, esp
+    push eax
+    
     mov ax, 0x10
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
-    mov eax, esp
-    push eax
     mov eax, irqHandler
     call eax
+    
+    ; pop esp
+    pop eax
+    pop eax
+    pop edi
+    pop esi
+    pop ebp
+    pop edx
+    pop ecx
+    pop ebx
     pop eax
     pop gs
     pop fs
     pop es
     pop ds
-    popa
     add esp, 8
     iret
 

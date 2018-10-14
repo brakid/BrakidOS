@@ -5,33 +5,36 @@
 #include "utils.h"
 #include "keyboard.h"
 #include "memory.h"
+#include "process.h"
+#include "program.h"
+#include "processmanager.h"
 
 void setup() {
-    enterCritical();
-    // GDT is set up as part of the bootloader;
-    installIdt();
-    installTimer();
-    installKeyboard();
-
     initMemory();
 
-    leaveCritical();
+    // GDT is set up as part of the bootloader;
+    installIdt();
+    installKeyboard();
+
+    setTimerPhase(10);
+}
+
+void loop() {
+    while(1) {}
 }
 
 extern "C" void main() {
+    enterCritical();
     setup();
 
     clearScreen();
     println("          =========================");
     println("          * BrakidOS - Experiment *");
-    println("          =========================");
-    println("Hello world!");
-    wait(5000);
-    println("Slept 5s");
-    char* userInput = (char*)malloc(100 / sizeof(uint32_t));
-    print(">: ");
-    userInput = scan(100, userInput);
-    println("\nTerminate");
-    println(userInput);
-    free((uint32_t*)userInput);
+    println("          ========================="); 
+    initPrograms();
+    initProcesses();   
+    leaveCritical();
+    startProcessManager();
+
+    while(1);
 }

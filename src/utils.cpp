@@ -1,6 +1,6 @@
 #include "utils.h"
 
-uint32_t criticalCounter = 0;
+uint32_t criticalCount = 0;
 
 char digitToChar(byte digit) {
     switch(digit) {
@@ -63,12 +63,12 @@ void enableInterupts() {
 
 void enterCritical() {
     disableInterupts();
-    criticalCounter++;
+    criticalCount++;
 }
 
 void leaveCritical() {
-    criticalCounter--;
-    if (criticalCounter == 0) {
+    criticalCount--;
+    if (criticalCount == 0) {
         enableInterupts();
     }
 }

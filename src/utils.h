@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+extern uint32_t criticalCount;
+
 char digitToChar(byte digit);
 
 byte* memcpy(byte* dest, const byte* src, uint32_t count);

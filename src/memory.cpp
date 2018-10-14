@@ -56,7 +56,7 @@ void reserveMemory(uint32_t* pointer, bool shared, byte processId, int size) {
     leaveCritical();
 }
 
-uint32_t* malloc(int size) {
+uint32_t* malloc(int size, bool shared) {
     enterCritical();
     if (size < 0) {
         // invalid input;
@@ -71,22 +71,41 @@ uint32_t* malloc(int size) {
         return 0;
     }
     
-    reserveMemory(pointer, false, getCurrentProcessId(), size);
+    reserveMemory(pointer, shared, getCurrentProcessId(), size);
     leaveCritical();
     return pointer;
+}
+
+uint32_t* smalloc(int size) {
+    return malloc(size, true);
+}
+
+uint32_t* malloc(int size) {
+    return malloc(size, false);
 }
 
 void free(uint32_t* pointer) {
     enterCritical();
     byte* memoryTableEntry = getMemoryTablePointerForMemoryPointer(pointer);
-    byte processId = getProcessId(memoryTableEntry);
+    if (!isMemoryUsed(memoryTableEntry)) {
+        println("Can not free unused memory");
+        leaveCritical();
+        return;
+    }
 
+    byte processId = getProcessId(memoryTableEntry);
     if (!(processId == getCurrentProcessId() || processId == KERNEL_PROCESS_ID || isMemoryShared(memoryTableEntry))) {
         println("Not allowed: memory belongs to different user");
         leaveCritical();
         return;
     }
     
+    // find first byte of chunk - go back until start or last isLast byte or free byte
+    byte* first = memoryTableEntry;
+    while(first >= (byte*)HEAP_START && isMemoryUsed(first) && (!isLastByte(first) || first == memoryTableEntry)) {
+        first--;
+    }
+    memoryTableEntry = first + 1;
     // release
     bool isLast = false;
     while(isMemoryUsed(memoryTableEntry) && !isLast) {
