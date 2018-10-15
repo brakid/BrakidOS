@@ -46,12 +46,17 @@ byte* getMemoryTablePointerForMemoryPointer(uint32_t* memory) {
     uint32_t difference = (uint32_t)memory - (MEMORY_TABLE_END + 1);
     return (byte*)(HEAP_START + difference / ALLOCATION_SIZE);
 }
- 
-void reserveMemory(uint32_t* pointer, bool shared, byte processId, int size) {
+
+int calculateBlockSize(int size) {
+    int offset = (size % ALLOCATION_SIZE) > 0;
+    return (size / ALLOCATION_SIZE) + offset;
+}
+
+void reserveMemory(uint32_t* pointer, bool shared, byte processId, int blockSize) {
     enterCritical();
     byte* memoryTableEntry = getMemoryTablePointerForMemoryPointer(pointer);
-    while (size-- > 0) {
-        *memoryTableEntry++ = getMemoryTableEntry(1, shared, size == 0, processId);
+    while (blockSize-- > 0) {
+        *memoryTableEntry++ = getMemoryTableEntry(1, shared, blockSize == 0, processId);
     }
     leaveCritical();
 }
@@ -64,27 +69,29 @@ uint32_t* malloc(int size, bool shared, byte processId) {
         return 0;
     }
 
-    uint32_t* pointer = getSelectedMemoryStrategy()(size);
+    int blockSize = calculateBlockSize(size);
+
+    uint32_t* pointer = getSelectedMemoryStrategy()(blockSize);
     if (pointer == 0) {
         // no memory chunk found
         leaveCritical();
         return 0;
     }
     
-    reserveMemory(pointer, shared, processId, size);
+    reserveMemory(pointer, shared, processId, blockSize);
     leaveCritical();
     return pointer;
 }
 
-uint32_t* pmalloc(int size, byte processId) {
+void* pmalloc(int size, byte processId) {
     return malloc(size, false, processId);
 }
 
-uint32_t* smalloc(int size) {
+void* smalloc(int size) {
     return malloc(size, true, getCurrentProcessId());
 }
 
-uint32_t* malloc(int size) {
+void* malloc(int size) {
     return malloc(size, false, getCurrentProcessId());
 }
 
@@ -127,6 +134,9 @@ void free(uint32_t* pointer) {
 
 void freeProcessMemory(byte processId) {
     enterCritical();
+    print("Freeing process memory for process ");
+    println(processId);
+    
     byte* memoryTableEntry = (byte*)HEAP_START;
     while (memoryTableEntry <= (byte*)MEMORY_TABLE_END) {
         if (isMemoryUsed(memoryTableEntry) && getProcessId(memoryTableEntry) == processId) {
@@ -135,6 +145,5 @@ void freeProcessMemory(byte processId) {
         }
         memoryTableEntry++;
     }
-
     leaveCritical();
 }

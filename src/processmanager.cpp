@@ -53,6 +53,7 @@ extern "C" void timerHandler() {
     //switch to internal stackpointer
     asm("mov esp, irqStackPointer");
     // save current process stack checksum
+    enterCritical();
     Process* current = currentProcess;
     current->stackTopPointer = (uint32_t*)stackPointer;
     current->checksum = calculateChecksum(current);
@@ -87,6 +88,7 @@ extern "C" void timerHandler() {
     stackPointer = (uint32_t)current->stackTopPointer;
     asm("mov esp, stackPointer");
     restoreContext();
+    leaveCritical();
     port_byte_out(0x20, 0x20);
     asm("iret");
 }

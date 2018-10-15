@@ -12,11 +12,11 @@ List* processList = 0;
 Process* initProcess(Program* program) {
     enterCritical();
     byte processId = getNewProcessId();
-    Process* process = (Process*)pmalloc(sizeof(Process)/ALLOCATION_SIZE, processId);
+    Process* process = (Process*)pmalloc(sizeof(Process), processId);
     process->processId = processId;
     process->processState = NOT_STARTED;
     process->programPointer = program->programFunction;
-    process->stackBottomPointer = (uint32_t*)(pmalloc(PROCESS_STACK_SIZE/ALLOCATION_SIZE, processId) + (PROCESS_STACK_SIZE/ALLOCATION_SIZE)) - 1; //16KB stack size, point to end
+    process->stackBottomPointer = (uint32_t*)((byte*)pmalloc(PROCESS_STACK_SIZE, processId) + PROCESS_STACK_SIZE) - 1; //16KB stack size, point to end
     process->stackTopPointer = process->stackBottomPointer;
     process->checksum = 0;
     print("Initializing program ");
@@ -45,8 +45,14 @@ void initProcesses() {
 
 void cleanupProcess(Process* process) {
     enterCritical();
+    print("Process ");
+    print(process->processId);
+    println(" finished");
+
     bool removed = remove(processList, process);
-    print("Removed process; ");
+    print("Removed process ");
+    print(process->processId);
+    print("? ");
     println(removed ? "yes" : "no");
     //free memory
     freeProcessMemory(process->processId);

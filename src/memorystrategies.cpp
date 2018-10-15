@@ -6,11 +6,11 @@
 int selectedMemoryStrategy = 0;
 
 // using the first chunk with sufficient size
-uint32_t* firstFit(int size) {
+uint32_t* firstFit(int blockSize) {
     byte* start = (byte*)HEAP_START;
     while (start <= (byte*)MEMORY_TABLE_END) {
         if (!isMemoryUsed(start)) {
-            if (size == 1) {
+            if (blockSize == 1) {
                 return getMemoryPointerFromMemoryTablePointer(start);
             }
 
@@ -20,9 +20,9 @@ uint32_t* firstFit(int size) {
                     break;
                 }
                 end++;
-            } while ((end - start) < size);
+            } while ((end - start) < blockSize);
             // start position is available
-            if (end - start == size) {
+            if (end - start == blockSize) {
                 return getMemoryPointerFromMemoryTablePointer(start);
             }
             start = end;

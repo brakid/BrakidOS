@@ -9,7 +9,7 @@ void program1Function() {
     while (true) {
         print("Program 1: ");
         println(counter++);
-        wait(10);
+        wait(50);
     }
 }
 
@@ -18,15 +18,15 @@ void program2Function() {
     while (true) {
         print("Program 2: ");
         println(counter--);
-        wait(10);
+        wait(50);
     }
 }
 
 void program3Function() {
     byte counter = 0;
-    while (true) {
+    while (counter < 10) {
         print("Program 3: ");
-        println(counter);
-        wait(10);
+        println(counter++);
+        wait(500);
     }
 }

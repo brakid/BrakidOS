@@ -11,7 +11,7 @@ List* programList;
 
 Program* initProgram(uint32_t programId, ProgramType programType, ProgramFunction programFunction) {
     enterCritical();
-    Program* program = (Program*)malloc(sizeof(Program)/4);
+    Program* program = (Program*)malloc(sizeof(Program));
     program->programId = programId;
     program->programType = programType;
     program->programFunction = programFunction;

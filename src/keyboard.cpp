@@ -5,13 +5,14 @@
 #include "irqs.h"
 #include "types.h"
 #include "utils.h"
+#include "memory.h"
 
 char lastCharacter = 0;
 
-/* timer: ~18.22Hz */
-void handleKeyboard(Registers* registers){
-    // store in allocated memory
-    byte keyboardUs[128] = 
+byte* keymap = 0;
+
+void fillKeymap() {
+    byte keyboard[128] = 
     {
         0, 27, '1', '2', '3', '4', '5', '6', '7', '8', /* 9 */
         '9', '0', '-', '=', '\b', /* Backspace */
@@ -48,6 +49,11 @@ void handleKeyboard(Registers* registers){
         0,  /* All other keys are undefined */
     };
 
+    keymap = (byte*)malloc(sizeof(keyboard));
+    memcpy(keymap, keyboard, sizeof(keyboard));
+}
+
+void handleKeyboard(Registers* registers){
     uint32_t interupt = registers->interuptNumber;
     interupt++;
     uint8_t keycode = port_byte_in(0x60);
@@ -56,7 +62,7 @@ void handleKeyboard(Registers* registers){
         //control keys
     } else {
         if (keycode < 128) {
-            lastCharacter = keyboardUs[keycode];
+            lastCharacter = keymap[keycode];
         }
     }
 }
@@ -70,8 +76,12 @@ char getLastCharacter() {
 void installKeyboard(){
     // IRQ1: keyboard
     installIrqHandler(1, handleKeyboard);
+
+    // initialize keymap
+    fillKeymap();
 }
 
+//consider making a blocking method
 char* scan(int maxLength, char* pointer) {
     memset((byte*)pointer, 0, maxLength);
     int length = 0;

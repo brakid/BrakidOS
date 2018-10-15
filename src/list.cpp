@@ -6,7 +6,7 @@
 
 Node* createNode() {
     enterCritical();
-    Node* node = (Node*)malloc(sizeof(Node)/ALLOCATION_SIZE);
+    Node* node = (Node*)malloc(sizeof(Node));
     node->value = 0;
     node->next = 0;
     leaveCritical();
@@ -15,7 +15,7 @@ Node* createNode() {
 
 List* createList() {
     enterCritical();
-    List* list = (List*)malloc(sizeof(List)/ALLOCATION_SIZE);
+    List* list = (List*)malloc(sizeof(List));
     list->first = 0;
     list->last = 0;
     list->size = 0;

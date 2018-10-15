@@ -20,10 +20,6 @@ void setup() {
     setTimerPhase(10);
 }
 
-void loop() {
-    while(1) {}
-}
-
 extern "C" void main() {
     enterCritical();
     setup();
@@ -33,7 +29,7 @@ extern "C" void main() {
     println("          * BrakidOS - Experiment *");
     println("          ========================="); 
     initPrograms();
-    initProcesses();   
+    initProcesses();
     leaveCritical();
     startProcessManager();
 
