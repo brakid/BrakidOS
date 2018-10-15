@@ -28,6 +28,7 @@ extern Process* currentProcess;
 
 byte getNewProcessId();
 byte getCurrentProcessId();
+Process* getCurrentProcess();
 
 void startProcessManager();
 void killProcess();

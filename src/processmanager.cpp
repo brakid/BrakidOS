@@ -9,14 +9,24 @@
 #include "constants.h"
 #include "process.h"
 #include "timer.h"
+#include "schedulingstrategy.h"
+#include "list.h"
 
 uint32_t irqStackPointer = (uint32_t)(HEAP_START - 1);
 uint32_t stackPointer = 0;
 
+List* processes = 0;
 Process* currentProcess = 0;
+byte currentProcessId = KERNEL_PROCESS_ID;
 byte processId = 0;
 
 byte getCurrentProcessId() {
+    enterCritical();
+    if (currentProcess == 0) {
+        leaveCritical();
+        return KERNEL_PROCESS_ID;
+    }
+    leaveCritical();
     return currentProcess->processId;
 }
 
@@ -25,45 +35,14 @@ byte getNewProcessId() {
 }
 
 void unblockProcesses() {
-    Node<Process>* processNode = processes;
-    processNode = processNode->next;
-    while(processNode != 0) {
-        processNode = processNode->next;
-    }
-}
-
-Process* selectNextProcess(Process* current) {
-    Process* first = processes->value;
-    Process* second = processes->next->value;
-    Process* third = processes->next->next->value;
-    if (current == first) {
-        return second;
-    } else if (current == second) {
-        return third;
-    } else {
-        return first;
-    }
-    /*Node<Process>* processNode = getProcessNode(current)->next;
-    if (processNode == 0) {
-        processNode = processes;
-    }
-    bool found = false;
-    while(!found) {
-        Process* process = processNode->value;
-        if (process->processState == READY) {
-            found = true;
-            return process;
-        }
-        processNode = processNode->next;
-        if (processNode == 0) {
-            processNode = processes;
-        }
-        if (processNode == getProcessNode(current) && current->processState != READY) {
-            println("No runnable processes");
-            return 0;
+    enterCritical();
+    for (int index = 0; index < size(processes); index++) {
+        Process* process = (Process*)get(processes, index);
+        if (process->processState == BLOCKED) {
+            process->processState = READY;
         }
     }
-    return 0;*/
+    leaveCritical();
 }
 
 /* timer: ~18.22Hz */
@@ -76,6 +55,7 @@ extern "C" void timerHandler() {
     // save current process stack checksum
     Process* current = currentProcess;
     current->stackTopPointer = (uint32_t*)stackPointer;
+    current->checksum = calculateChecksum(current);
     
     increaseTimer();
 
@@ -84,25 +64,27 @@ extern "C" void timerHandler() {
         current->processState = READY;   
     }
     if (current->processState == FINISHED) {
-        //free memory
-        free((uint32_t*)currentProcess->stackTopPointer);
-        free((uint32_t*)currentProcess);
+        cleanupProcess(currentProcess);
     }
 
     // unblock blocked processes
     unblockProcesses();
     
     // round robin like scheduling
-    currentProcess = selectNextProcess(current);
+    SchedulingStrategy schedulingStrategy = getSelectedSchedulingStrategy();
+    currentProcess = schedulingStrategy(current);
    
     //currentProcess = processNode->value;
     current = currentProcess; // implement scheduling strategy
     current->processState = RUNNING;
     // check stack checksum
+    if (!validateStack(current)) {
+        println("Stack content has changed!");
+        for(;;);
+    }
     
     //set stackpointer back
     stackPointer = (uint32_t)current->stackTopPointer;
-    println(stackPointer);
     asm("mov esp, stackPointer");
     restoreContext();
     port_byte_out(0x20, 0x20);
@@ -127,22 +109,6 @@ void killProcess() {
     enterCritical();
     if (currentProcess->processId != KERNEL_PROCESS_ID) {
         currentProcess->processState = FINISHED;
-        Node<Process>* processNode = processes;
-        Node<Process>* previous = 0;
-        
-        while(processNode != 0) {
-            if (processNode->value == currentProcess) {
-                if (previous == 0) {
-                    processes = processNode->next;
-                } {
-                    previous->next = processNode->next;
-                }
-                free((uint32_t*)processNode);
-                break;
-            }
-            previous = processNode;
-            processNode = processNode->next;
-        } 
     }
     leaveCritical();
 }
@@ -173,23 +139,24 @@ void startProcess(Process* process) {
     }
     process->stackTopPointer++;
     process->processState = READY;
-    
+    process->checksum = calculateChecksum(process);
     leaveCritical(); 
 }
 
 void startProcessManager() {
     enterCritical();
-    if (processes == 0) {
+    processes = getProcessList();
+    if (size(processes) == 0) {
         println("No processes to run");
-        return;
+        for(;;);
     }
-    Node<Process>* processNode = processes;
-    while(processNode != 0) {
-        Process* process = processNode->value;
+    
+    for (int index = 0; index < size(processes); index++) {
+        Process* process = (Process*)get(processes, index);
         startProcess(process);
-        processNode = processNode->next;
     }
-    currentProcess = processes->value;
+
+    currentProcess = (Process*)get(processes, 0);
     currentProcess->processState = RUNNING;
 
     // check stack checksum

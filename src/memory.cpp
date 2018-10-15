@@ -99,7 +99,12 @@ void free(uint32_t* pointer) {
 
     byte processId = getProcessId(memoryTableEntry);
     if (!(processId == getCurrentProcessId() || processId == KERNEL_PROCESS_ID || isMemoryShared(memoryTableEntry))) {
-        println("Not allowed: memory belongs to different user");
+        println("Not allowed: memory belongs to different process");
+        print("Memory process: ");
+        print(processId);
+        print(", Current process: ");
+        println(getCurrentProcessId());
+        
         leaveCritical();
         return;
     }
@@ -117,5 +122,19 @@ void free(uint32_t* pointer) {
         // check if this is the last item of a memory chunk
         *memoryTableEntry++ = 0;
     }
+    leaveCritical();
+}
+
+void freeProcessMemory(byte processId) {
+    enterCritical();
+    byte* memoryTableEntry = (byte*)HEAP_START;
+    while (memoryTableEntry <= (byte*)MEMORY_TABLE_END) {
+        if (isMemoryUsed(memoryTableEntry) && getProcessId(memoryTableEntry) == processId) {
+            uint32_t* memoryPointer = getMemoryPointerFromMemoryTablePointer(memoryTableEntry);
+            free(memoryPointer);
+        }
+        memoryTableEntry++;
+    }
+
     leaveCritical();
 }

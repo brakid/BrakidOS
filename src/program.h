@@ -16,10 +16,10 @@ struct Program {
     ProgramFunction programFunction;
 };
 
-extern Node<Program>* programs;
+extern List* programList;
 
 void initPrograms();
 
-Node<Program>* getPrograms();
+List* getProgramList();
 
 #endif

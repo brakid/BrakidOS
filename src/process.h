@@ -15,15 +15,21 @@ struct Process {
     uint32_t processId;
     ProgramFunction programPointer;
     uint32_t* stackTopPointer;
+    uint32_t* stackBottomPointer;
     ProcessState processState;
+    uint32_t checksum;
 };
 
-extern Node<Process>* processes;
-extern Node<Process>* lastProcess;
-
-Node<Process>* getProcessNode(Process* process);
+extern List* processList;
 
 void initProcesses();
 
 void initProcess(Process* process);
+
+void cleanupProcess(Process* process);
+
+List* getProcessList();
+
+bool validateStack(Process* process);
+uint32_t calculateChecksum(Process* process);
 #endif

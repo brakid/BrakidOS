@@ -8,6 +8,7 @@
 #include "process.h"
 #include "program.h"
 #include "processmanager.h"
+#include "list.h"
 
 void setup() {
     initMemory();

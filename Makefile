@@ -9,12 +9,13 @@ DISK=$(BUILD_DIR)/disk.img
 DEBUG=-g
 
 clean:
-	rm build/*
+	rm $(BUILD_DIR)/*
 all: kernel
 bootloader: $(BOOTLOADER_TARGET)
 kernel: $(BINARY)
 
 $(BOOTLOADER_TARGET): $(BOOTLOADER_SRC)
+	mkdir -p $(BUILD_DIR)
 	nasm -f elf32 $(BOOTLOADER_SRC) -o $(BOOTLOADER_TARGET)
 
 $(BINARY): $(KERNEL_SRC) $(BOOTLOADER_TARGET)

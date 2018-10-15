@@ -5,7 +5,7 @@
 
 typedef uint32_t* (*MemoryStrategy)(int);
 
-extern int selected;
+extern int selectedMemoryStrategy;
 
 uint32_t* findFirst(int size);
 

@@ -19,4 +19,5 @@ uint32_t* pmalloc(int size, byte processId);
 uint32_t* smalloc(int size);
 uint32_t* malloc(int size);
 void free(uint32_t* pointer);
+void freeProcessMemory(byte processId);
 #endif

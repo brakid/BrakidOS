@@ -3,7 +3,7 @@
 #include "constants.h"
 #include "memory.h"
 
-int selected = 0;
+int selectedMemoryStrategy = 0;
 
 // using the first chunk with sufficient size
 uint32_t* firstFit(int size) {
@@ -37,5 +37,5 @@ uint32_t* firstFit(int size) {
 MemoryStrategy memoryStrategies[1] = {firstFit}; 
 
 MemoryStrategy getSelectedMemoryStrategy() {
-    return memoryStrategies[selected];
+    return memoryStrategies[selectedMemoryStrategy];
 }
