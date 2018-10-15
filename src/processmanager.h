@@ -24,7 +24,6 @@
 #include "types.h"
 #include "process.h"
 
-extern volatile uint64_t timerTicks;
 extern Process* currentProcess;
 
 byte getNewProcessId();

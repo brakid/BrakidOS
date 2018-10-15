@@ -10,10 +10,8 @@
 #include "process.h"
 #include "timer.h"
 
-volatile uint64_t timerTicks = 0;
 uint32_t irqStackPointer = (uint32_t)(HEAP_START - 1);
 uint32_t stackPointer = 0;
-byte c = 0;
 
 Process* currentProcess = 0;
 byte processId = 0;
@@ -24,6 +22,91 @@ byte getCurrentProcessId() {
 
 byte getNewProcessId() {
     return processId++;
+}
+
+void unblockProcesses() {
+    Node<Process>* processNode = processes;
+    processNode = processNode->next;
+    while(processNode != 0) {
+        processNode = processNode->next;
+    }
+}
+
+Process* selectNextProcess(Process* current) {
+    Process* first = processes->value;
+    Process* second = processes->next->value;
+    Process* third = processes->next->next->value;
+    if (current == first) {
+        return second;
+    } else if (current == second) {
+        return third;
+    } else {
+        return first;
+    }
+    /*Node<Process>* processNode = getProcessNode(current)->next;
+    if (processNode == 0) {
+        processNode = processes;
+    }
+    bool found = false;
+    while(!found) {
+        Process* process = processNode->value;
+        if (process->processState == READY) {
+            found = true;
+            return process;
+        }
+        processNode = processNode->next;
+        if (processNode == 0) {
+            processNode = processes;
+        }
+        if (processNode == getProcessNode(current) && current->processState != READY) {
+            println("No runnable processes");
+            return 0;
+        }
+    }
+    return 0;*/
+}
+
+/* timer: ~18.22Hz */
+extern "C" void timerHandler() {
+    saveContext();
+    // save current stackpointer
+    asm("mov stackPointer, esp");
+    //switch to internal stackpointer
+    asm("mov esp, irqStackPointer");
+    // save current process stack checksum
+    Process* current = currentProcess;
+    current->stackTopPointer = (uint32_t*)stackPointer;
+    
+    increaseTimer();
+
+    //set current process to READY
+    if (current->processState == RUNNING) {
+        current->processState = READY;   
+    }
+    if (current->processState == FINISHED) {
+        //free memory
+        free((uint32_t*)currentProcess->stackTopPointer);
+        free((uint32_t*)currentProcess);
+    }
+
+    // unblock blocked processes
+    unblockProcesses();
+    
+    // round robin like scheduling
+    currentProcess = selectNextProcess(current);
+   
+    //currentProcess = processNode->value;
+    current = currentProcess; // implement scheduling strategy
+    current->processState = RUNNING;
+    // check stack checksum
+    
+    //set stackpointer back
+    stackPointer = (uint32_t)current->stackTopPointer;
+    println(stackPointer);
+    asm("mov esp, stackPointer");
+    restoreContext();
+    port_byte_out(0x20, 0x20);
+    asm("iret");
 }
 
 void dispatchProcess() {
@@ -72,7 +155,7 @@ void yield() {
         currentProcess->processState = BLOCKED;
     }
     leaveCritical();
-    wait(2000 / CLOCK_STEPS_PER_SECOND);
+    timerHandler();
     enterCritical();
     criticalCount = critical;
     leaveCritical();
@@ -92,85 +175,6 @@ void startProcess(Process* process) {
     process->processState = READY;
     
     leaveCritical(); 
-}
-
-/* timer: ~18.22Hz */
-extern "C" void timerHandler() {
-    saveContext();
-    // save current stackpointer
-    asm("mov stackPointer, esp");
-    //switch to internal stackpointer
-    asm("mov esp, irqStackPointer");
-    // save current process stack checksum
-    Process* current = currentProcess;
-    current->stackTopPointer = (uint32_t*)stackPointer;
-    
-    timerTicks++;
-
-    //set current process to READY
-    if (current->processState == RUNNING) {
-        current->processState = READY;   
-    }
-    if (current->processState == FINISHED) {
-        //free memory
-        free((uint32_t*)currentProcess->stackTopPointer);
-        free((uint32_t*)currentProcess);
-    }
-
-    // unblock blocked processes
-    if (current->processState == BLOCKED) {
-        current->processState = READY;
-    }
-    //Node<Process>* processNode = processes;
-    //print((uint32_t)processNode);
-    //processNode = processNode->next;
-    //while(processNode != 0) {
-    //    processNode = processNode->next;
-    //}
-    
-    // round robin like scheduling
-    Process* p = currentProcess;
-    Process* first = processes->value;
-    Process* second = processes->next->value;
-    Process* third = first; //lastProcess->value;
-    if (p == second) {
-        currentProcess = first;
-    } else if (p == third) {
-        currentProcess = second;
-    } //else {
-       // currentProcess = third;
-    //}
-   // Node<Process>* processNode = getProcessNode(lastProcess);
-    /*bool found = false;
-    while(!found) {
-        Process* process = processNode->value;
-        if (process->processState == READY) {
-            found = true;
-            currentProcess = process;
-            break;
-        }
-        processNode = processNode->next;
-        if (processNode == 0) {
-            processNode = processes;
-        }
-        if (processNode == getProcessNode(lastProcess) && lastProcess->processState != READY) {
-            println("No runnable processes");
-            return;
-        }
-    }*/
-    //currentProcess = processNode->value;
-    current = currentProcess; // implement scheduling strategy
-    current->processState = RUNNING;
-    // check stack checksum
-    print("Process to run ");
-    println((uint32_t)current);
-    //set stackpointer back
-    stackPointer = (uint32_t)current->stackTopPointer;
-    println(stackPointer);
-    asm("mov esp, stackPointer");
-    restoreContext();
-    port_byte_out(0x20, 0x20);
-    asm("iret");
 }
 
 void startProcessManager() {

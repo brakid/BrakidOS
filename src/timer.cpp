@@ -5,6 +5,12 @@
 #include "processmanager.h"
 #include "io.h"
 
+volatile uint64_t timerTicks = 0;
+
+void increaseTimer() {
+    timerTicks++;
+}
+
 void setTimerPhase(int frequency){
     int divisor = CLOCK_FREQUENCY / frequency; /* Calculate our divisor */
     port_byte_out(0x43, 0x34);             /* Set our command byte 0x34 */
