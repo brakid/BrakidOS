@@ -56,7 +56,7 @@ void reserveMemory(uint32_t* pointer, bool shared, byte processId, int size) {
     leaveCritical();
 }
 
-uint32_t* malloc(int size, bool shared) {
+uint32_t* malloc(int size, bool shared, byte processId) {
     enterCritical();
     if (size < 0) {
         // invalid input;
@@ -71,17 +71,21 @@ uint32_t* malloc(int size, bool shared) {
         return 0;
     }
     
-    reserveMemory(pointer, shared, getCurrentProcessId(), size);
+    reserveMemory(pointer, shared, processId, size);
     leaveCritical();
     return pointer;
 }
 
+uint32_t* pmalloc(int size, byte processId) {
+    return malloc(size, false, processId);
+}
+
 uint32_t* smalloc(int size) {
-    return malloc(size, true);
+    return malloc(size, true, getCurrentProcessId());
 }
 
 uint32_t* malloc(int size) {
-    return malloc(size, false);
+    return malloc(size, false, getCurrentProcessId());
 }
 
 void free(uint32_t* pointer) {

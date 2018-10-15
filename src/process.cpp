@@ -26,13 +26,14 @@ Node<Process>* getProcessNode(Process* process) {
 
 Node<Process>* initProcess(Program* program) {
     enterCritical();
-    Node<Process>* processNode = (Node<Process>*)malloc(sizeof(Node<Process>)/ALLOCATION_SIZE);
-    Process* process = (Process*)malloc(sizeof(Process)/ALLOCATION_SIZE);
+    byte processId = getNewProcessId();
+    Node<Process>* processNode = (Node<Process>*)pmalloc(sizeof(Node<Process>)/ALLOCATION_SIZE, processId);
+    Process* process = (Process*)pmalloc(sizeof(Process)/ALLOCATION_SIZE, processId);
     processNode->value = process;
-    process->processId = getNewProcessId();
+    process->processId = processId;
     process->processState = NOT_STARTED;
     process->programPointer = program->programFunction;
-    process->stackTopPointer = (uint32_t*)(malloc(PROCESS_STACK_SIZE/ALLOCATION_SIZE) + (PROCESS_STACK_SIZE/ALLOCATION_SIZE)) - 1; //16KB stack size, point to end
+    process->stackTopPointer = (uint32_t*)(pmalloc(PROCESS_STACK_SIZE/ALLOCATION_SIZE, processId) + (PROCESS_STACK_SIZE/ALLOCATION_SIZE)) - 1; //16KB stack size, point to end
     if (lastProcess != 0) {
         lastProcess->next = processNode;
     }
