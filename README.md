@@ -4,6 +4,7 @@ Operating system experiment
 ## Requirements:
 * nasm
 * cross-compiler: https://github.com/nativeos/homebrew-i386-elf-toolchain
+* qemu emulator: https://www.qemu.org
 
 ## Currently implemented:
 * printing to screen
