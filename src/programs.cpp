@@ -3,12 +3,19 @@
 #include "types.h"
 #include "timer.h"
 #include "processmanager.h"
+#include "keyboard.h"
+#include "memory.h"
+#include "utils.h"
 
 void program1Function() {
-    byte counter = 0;
     while (true) {
-        print("Program 1: ");
-        println(counter++);
+        char* string = (char*)malloc(10);
+        println("Enter number 1:");
+        int x = atoi(scan(10, string));
+        println("Enter number 2:");
+        int y = atoi(scan(10, string));
+        print("Sum: ");
+        println(x + y);
         wait(50);
     }
 }

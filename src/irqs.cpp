@@ -88,14 +88,21 @@ extern "C" void irqHandler(Registers* registers) {
     }
 
     /* If the IDT entry that was invoked was greater than 40
-    *  (meaning IRQ8 - 15), then we need to send an EOI to
+    *  (meaning IRQ8 - 7), then we need to send an EOI to
     *  the slave controller */
-    if (irqNumber >= 40)
-    {
-        port_byte_out(0xA0, 0x20);
+    if (irqNumber >= 40) {
+        port_byte_out(PIC_2_CTRL, 0x20);
     }
 
     /* In either case, we need to send an EOI to the master
     *  interrupt controller too */
-    port_byte_out(0x20, 0x20);
+    port_byte_out(PIC_1_CTRL, 0x20);
+}
+
+void setIrqs(uint16_t mask) {
+    byte lowerMask = (byte)(mask & 0x0000FFFF);
+    byte higherMask = (byte)((mask >> 8) & 0x0000FFFF);
+    
+    port_byte_out(PIC_1_DATA, lowerMask);
+    port_byte_out(PIC_2_DATA, higherMask);
 }

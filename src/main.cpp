@@ -1,5 +1,4 @@
 #include "io.h"
-#include "global.h"
 #include "idt.h"
 #include "timer.h"
 #include "utils.h"
@@ -8,7 +7,6 @@
 #include "process.h"
 #include "program.h"
 #include "processmanager.h"
-#include "list.h"
 
 void setup() {
     initMemory();

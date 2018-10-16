@@ -1,4 +1,3 @@
-#include "global.h"
 #include "io.h"
 #include "string.h"
 #include "ports.h"

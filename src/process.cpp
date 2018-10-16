@@ -8,6 +8,7 @@
 #include "processmanager.h"
 
 List* processList = 0;
+Process* idleProcess = 0;
 
 Process* initProcess(Program* program) {
     enterCritical();
@@ -29,6 +30,8 @@ Process* initProcess(Program* program) {
 
 void initProcesses() {
     enterCritical();
+    idleProcess = initProcess(getIdleProgram());
+
     processList = createList();
 
     List* programs = getProgramList();
@@ -61,6 +64,10 @@ void cleanupProcess(Process* process) {
 
 List* getProcessList() {
     return processList;
+}
+
+Process* getIdleProcess() {
+    return idleProcess;
 }
 
 bool validateStack(Process* process) {

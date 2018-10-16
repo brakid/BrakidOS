@@ -2,7 +2,8 @@
 #define __KEYBOARD__
 #include "types.h"
 
-extern byte keyboardUs[128];
+#define STATUS_REGISTER 0x64
+#define DATA_REGISTER   0x60
 
 void installKeyboard();
 char getLastCharacter();

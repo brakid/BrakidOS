@@ -8,6 +8,22 @@ int selectedSchedulingStrategy = 0;
 
 Process* roundRobin(Process* currentProcess) {
     List* processes = getProcessList();
+    
+    if (size(processes) == 0) {
+        println("No process available");
+        return 0;
+    }
+    bool processReady = false;
+    for(int index = 0; index < size(processes); index++) {
+        if (((Process*)get(processes, index))->processState == READY) {
+            processReady = true;
+        }
+    }
+    if (!processReady) {
+        println("No process ready");
+        return 0;
+    }
+
     int currentIndex = find(processes, currentProcess);
     //start at process after the current one
     int runningIndex = currentIndex + 1;
@@ -23,7 +39,7 @@ Process* roundRobin(Process* currentProcess) {
         return currentProcess;
     } else {
         println("No process available");
-        for(;;);
+        return 0;
     }
 }
 

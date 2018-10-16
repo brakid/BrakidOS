@@ -70,11 +70,13 @@ extern "C" void timerHandler() {
 
     // unblock blocked processes
     unblockProcesses();
-    
     // round robin like scheduling
     SchedulingStrategy schedulingStrategy = getSelectedSchedulingStrategy();
     currentProcess = schedulingStrategy(current);
-   
+    if (currentProcess == 0) {
+        currentProcess = getIdleProcess();
+    }
+    
     //currentProcess = processNode->value;
     current = currentProcess; // implement scheduling strategy
     current->processState = RUNNING;
@@ -147,18 +149,22 @@ void startProcess(Process* process) {
 
 void startProcessManager() {
     enterCritical();
+
+    // start idle process
+    startProcess(getIdleProcess());
+
     processes = getProcessList();
     if (size(processes) == 0) {
         println("No processes to run");
-        for(;;);
+        currentProcess = getIdleProcess();
+    } else {    
+        for (int index = 0; index < size(processes); index++) {
+            Process* process = (Process*)get(processes, index);
+            startProcess(process);
+        }
+        currentProcess = (Process*)get(processes, 0);
     }
     
-    for (int index = 0; index < size(processes); index++) {
-        Process* process = (Process*)get(processes, index);
-        startProcess(process);
-    }
-
-    currentProcess = (Process*)get(processes, 0);
     currentProcess->processState = RUNNING;
 
     // check stack checksum

@@ -16,10 +16,9 @@ struct Program {
     ProgramFunction programFunction;
 };
 
-extern List* programList;
-
 void initPrograms();
 
 List* getProgramList();
+Program* getIdleProgram();
 
 #endif

@@ -6,8 +6,14 @@
 #include "io.h"
 #include "utils.h"
 #include "constants.h"
+#include "timer.h"
 
-List* programList;
+List* programList = 0;
+Program* idleProgram = 0;
+
+void idleFunction() {
+    while(1);
+}
 
 Program* initProgram(uint32_t programId, ProgramType programType, ProgramFunction programFunction) {
     enterCritical();
@@ -21,6 +27,8 @@ Program* initProgram(uint32_t programId, ProgramType programType, ProgramFunctio
 
 void initPrograms() {
     enterCritical();
+    idleProgram = initProgram(0, AUTOSTART, idleFunction);
+
     programList = createList();
     append(programList, initProgram(1, AUTOSTART, program1Function));
     append(programList, initProgram(2, AUTOSTART, program2Function));
@@ -30,4 +38,8 @@ void initPrograms() {
 
 List* getProgramList() {
     return programList;
+}
+
+Program* getIdleProgram() {
+    return idleProgram;
 }

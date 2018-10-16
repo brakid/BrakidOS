@@ -20,8 +20,6 @@ struct Process {
     uint32_t checksum;
 };
 
-extern List* processList;
-
 void initProcesses();
 
 void initProcess(Process* process);
@@ -29,6 +27,7 @@ void initProcess(Process* process);
 void cleanupProcess(Process* process);
 
 List* getProcessList();
+Process* getIdleProcess();
 
 bool validateStack(Process* process);
 uint32_t calculateChecksum(Process* process);

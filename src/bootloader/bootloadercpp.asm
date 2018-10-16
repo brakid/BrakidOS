@@ -70,6 +70,7 @@ boot2:
 %macro isr_noerr 1
 global isr%1
 isr%1:
+    cli
     push 0
     push %1
     jmp isr_common_stub
@@ -78,6 +79,7 @@ isr%1:
 %macro isr_err 1
 global isr%1
 isr%1:
+    cli
     push %1
     jmp isr_common_stub
 %endmacro

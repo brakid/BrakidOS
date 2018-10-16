@@ -31,6 +31,9 @@
 #include "types.h"
 #include "string.h"
 
+extern byte row;
+extern byte column;
+
 void clearScreen();
 void print(
         const char* text,
