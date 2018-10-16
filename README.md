@@ -8,17 +8,19 @@ Operating system experiment
 
 ## Currently implemented:
 * printing to screen
-* interupt handling
-  * timer 
-  * keyboard
 * dynamic memory management (first fit strategy)
-* reading user input
+* interupt handling
+  * timer (used for preemtive taskscheduling and getting system time)
+  * keyboard (supports US keyboard + shift)
+* reading user input (blocking timer interupts)
 * preemptive taskscheduling (round robin strategy)
+  * yielding remaining processign time
+  * idle process (picked if no other task is ready)
 * garbage collector to free memory after processes have finished
+* utility methods: number -> string, string -> number
 
 ## TODOs:
-* task manager to start new processes
+* task manager to start new processes (select a program -> create a running process)
 * file system
-* keyboard: map keycode to character (initialize using malloc)
 
 The kernel will be built into a floppy disk like format. It comes with its own rudimentary bootloader that initializes the GDT, enables the A20 gate and loads the rest of the kernel from floppy disk.
