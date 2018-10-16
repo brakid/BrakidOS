@@ -45,6 +45,11 @@ void unblockProcesses() {
     leaveCritical();
 }
 
+void invokeScheuler() {
+    // cause timer interupt to call scheduler
+    asm("int 32");
+}
+
 /* timer: ~18.22Hz */
 extern "C" void timerHandler() {
     saveContext();
@@ -125,7 +130,7 @@ void yield() {
         currentProcess->processState = BLOCKED;
     }
     leaveCritical();
-    timerHandler();
+    invokeScheuler();
     enterCritical();
     criticalCount = critical;
     leaveCritical();

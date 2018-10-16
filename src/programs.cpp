@@ -8,16 +8,15 @@
 #include "utils.h"
 
 void program1Function() {
-    while (true) {
-        char* string = (char*)malloc(10);
-        println("Enter number 1:");
-        int x = atoi(scan(10, string));
-        println("Enter number 2:");
-        int y = atoi(scan(10, string));
-        print("Sum: ");
-        println(x + y);
-        wait(50);
-    }
+    char* string = (char*)malloc(10);
+    println("Enter number 1:");
+    int x = atoi(scan(10, string));
+    println("Enter number 2:");
+    int y = atoi(scan(10, string));
+    print("Sum: ");
+    println(x + y);
+    wait(50);
+    print("Finish");
 }
 
 void program2Function() {

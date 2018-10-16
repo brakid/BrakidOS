@@ -7,12 +7,15 @@
 #include "utils.h"
 #include "constants.h"
 #include "timer.h"
+#include "processmanager.h"
 
 List* programList = 0;
 Program* idleProgram = 0;
 
 void idleFunction() {
-    while(1);
+    while(1) {
+        yield();
+    }
 }
 
 Program* initProgram(uint32_t programId, ProgramType programType, ProgramFunction programFunction) {
