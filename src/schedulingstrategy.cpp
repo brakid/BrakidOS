@@ -10,7 +10,7 @@ Process* roundRobin(Process* currentProcess) {
     List* processes = getProcessList();
     
     if (size(processes) == 0) {
-        println("No process available");
+        //println("No process available");
         return 0;
     }
     bool processReady = false;
@@ -20,7 +20,7 @@ Process* roundRobin(Process* currentProcess) {
         }
     }
     if (!processReady) {
-        println("No process ready");
+        //println("No process ready");
         return 0;
     }
 

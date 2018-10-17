@@ -4,6 +4,9 @@
 #include "types.h"
 #include "list.h"
 
+#define AUTOSTART_NAME "Autostart"
+#define MANUAL_NAME "Manual"
+
 enum ProgramType {
     AUTOSTART, MANUAL
 };

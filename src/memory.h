@@ -19,6 +19,6 @@ byte* getMemoryTablePointerForMemoryPointer(uint32_t* memory);
 void* pmalloc(int size, byte processId);
 void* smalloc(int size);
 void* malloc(int size);
-void free(uint32_t* pointer);
+void free(void* pointer);
 void freeProcessMemory(byte processId);
 #endif

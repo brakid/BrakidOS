@@ -7,7 +7,7 @@
 #include "utils.h"
 #include "constants.h"
 #include "timer.h"
-#include "processmanager.h"
+#include "scheduler.h"
 
 List* programList = 0;
 Program* idleProgram = 0;

@@ -16,7 +16,7 @@ void program1Function() {
     print("Sum: ");
     println(x + y);
     wait(50);
-    print("Finish");
+    println("Finish");
 }
 
 void program2Function() {

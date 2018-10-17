@@ -38,6 +38,10 @@ int ctoi(char character) {
 int atoi(char* string) {
     int number = 0;
     int multiplier = 1;
+    if (*string == 0) {
+        println("Input string is not a number:");
+        return -1;
+    }
     // check first character: -, +
     if(*string == '-') {
         multiplier = -1;

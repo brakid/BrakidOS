@@ -222,5 +222,5 @@ irq_common_stub:
 section .bss
 align 4
 kernel_stack_bottom: equ $
-    resb 32768 ; 32 KB
+    resb 65536 ; 64 KB
 kernel_stack_top:

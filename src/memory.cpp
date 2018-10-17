@@ -3,7 +3,7 @@
 #include "utils.h"
 #include "constants.h"
 #include "io.h"
-#include "processmanager.h"
+#include "scheduler.h"
 #include "memorystrategies.h"
 
 void initMemory() {
@@ -84,20 +84,29 @@ uint32_t* malloc(int size, bool shared, byte processId) {
 }
 
 void* pmalloc(int size, byte processId) {
-    return malloc(size, false, processId);
+    enterCritical();
+    uint32_t* pointer = malloc(size, false, processId);
+    leaveCritical();
+    return pointer;
 }
 
 void* smalloc(int size) {
-    return malloc(size, true, getCurrentProcessId());
+    enterCritical();
+    uint32_t* pointer = malloc(size, true, getCurrentProcessId());
+    leaveCritical();
+    return pointer;
 }
 
 void* malloc(int size) {
-    return malloc(size, false, getCurrentProcessId());
+    enterCritical();
+    uint32_t* pointer = malloc(size, false, getCurrentProcessId());
+    leaveCritical();
+    return pointer;
 }
 
-void free(uint32_t* pointer) {
+void free(void* pointer) {
     enterCritical();
-    byte* memoryTableEntry = getMemoryTablePointerForMemoryPointer(pointer);
+    byte* memoryTableEntry = getMemoryTablePointerForMemoryPointer((uint32_t*)pointer);
     if (!isMemoryUsed(memoryTableEntry)) {
         println("Can not free unused memory");
         leaveCritical();
@@ -105,7 +114,7 @@ void free(uint32_t* pointer) {
     }
 
     byte processId = getProcessId(memoryTableEntry);
-    if (!(processId == getCurrentProcessId() || processId == KERNEL_PROCESS_ID || isMemoryShared(memoryTableEntry))) {
+    if (!isMemoryShared(memoryTableEntry) && processId != getCurrentProcessId() && getCurrentProcessId() != KERNEL_PROCESS_ID) {
         println("Not allowed: memory belongs to different process");
         print("Memory process: ");
         print(processId);

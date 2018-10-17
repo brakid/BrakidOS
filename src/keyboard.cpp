@@ -17,14 +17,14 @@ char* shiftKeycodes = 0;
 volatile bool isShift = false;
 
 void fillKeymap() {
-    char keycodesUs[KEYCODE_COUNT] = { 0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',
+    char keycodesUs[KEYCODE_COUNT] = { 0, ESC, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',
         '\b', 0, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', 0, 'a', 's', 'd',
         'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0, '\\', 'z', 'x', 'c', 'v', 'b', 'n',
         'm', ',', '.',
         '/', 0, 0, 0, ' '
     };
     
-    char shiftKeycodesUs[KEYCODE_COUNT] = { 0, 0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+',
+    char shiftKeycodesUs[KEYCODE_COUNT] = { 0, ESC, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+',
         '\b', 0, 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n', 0, 'A', 'S', 'D', 'F',
         'G', 'H', 'J', 'K', 'L', ':', '"', '~', 0, '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>',
         '?', 0, 0, 0, ' '
@@ -81,30 +81,41 @@ void installKeyboard(){
 
 char* scan(int maxLength, char* pointer) {
     setIrqs(0xFFFD);
-    
+    pointer = interuptFreeScan(maxLength, pointer);
+    setIrqs(0x0);
+    return pointer;
+}
+
+char* interuptFreeScan(int maxLength, char* pointer) {
     memset((byte*)pointer, 0, maxLength);
     int length = 0;
     char* currentPosition = pointer;
     char lastCharacter = 0;
-    while (lastCharacter != '\n' && length < maxLength) {
+    while (length < maxLength) {
         if (lastCharacter != 0) {
-            if (lastCharacter == '\b') {
-                if (length > 0) {
+            switch (lastCharacter) {
+                case '\b':
+                    if (length > 0) {
+                        print(lastCharacter);
+                        currentPosition--;
+                        *currentPosition = 0;
+                        length--;
+                    }
+                    break;
+                case '\n':
+                    print(" ");
+                    length = maxLength;
+                    break;
+                default:
                     print(lastCharacter);
-                    currentPosition--;
-                    *currentPosition = 0;
-                    length--;
-                }
-            } else {
-                print(lastCharacter);    
-                *currentPosition++ = lastCharacter;
-                length++;
+                    *currentPosition++ = lastCharacter;
+                    length++;
+                    break;
             }
         }
         lastCharacter = getLastCharacter();
     }
     *currentPosition = 0;
     println("");
-    setIrqs(0x0);
     return pointer;
 }

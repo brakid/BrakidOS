@@ -2,8 +2,6 @@
 #include "ports.h"
 #include "regs.h"
 #include "types.h"
-#include "processmanager.h"
-#include "io.h"
 
 volatile uint64_t timerTicks = 0;
 

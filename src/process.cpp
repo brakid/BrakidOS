@@ -16,7 +16,7 @@ Process* initProcess(Program* program) {
     Process* process = (Process*)pmalloc(sizeof(Process), processId);
     process->processId = processId;
     process->processState = NOT_STARTED;
-    process->programPointer = program->programFunction;
+    process->program = program;
     process->stackBottomPointer = (uint32_t*)((byte*)pmalloc(PROCESS_STACK_SIZE, processId) + PROCESS_STACK_SIZE) - 1; //16KB stack size, point to end
     process->stackTopPointer = process->stackBottomPointer;
     process->checksum = 0;
@@ -58,7 +58,7 @@ void cleanupProcess(Process* process) {
     print("? ");
     println(removed ? "yes" : "no");
     //free memory
-    freeProcessMemory(process->processId);
+    //freeProcessMemory(process->processId);
     leaveCritical();
 }
 
