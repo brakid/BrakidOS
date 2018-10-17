@@ -3,8 +3,9 @@
 #include "ports.h"
 #include "utils.h"
 
-byte row = 0;
-byte column = 0;
+int row = 0;
+int column = 0;
+uint16_t blank = 0x20 | WHITE << 8;
 
 void updateCursor(byte row, byte column){
     int position = (row * COLUMNS + column);
@@ -17,9 +18,7 @@ void updateCursor(byte row, byte column){
 
 // because of printing a single character each time the maximum row can be 25;
 void scrollScreen() {
-    uint16_t blank = 0x20 | WHITE << 8;
     volatile char* video = (volatile char*) VIDEO_POSITION;
-
     if (row >= ROWS) {
         memcpy((uint16_t*)video, (uint16_t*)video + COLUMNS, (ROWS - 1) * COLUMNS);
         memset((uint16_t*)video + (ROWS - 1) * COLUMNS, blank, COLUMNS);
@@ -52,16 +51,28 @@ void print(
     volatile char* video = (volatile char*) VIDEO_POSITION;
     video += (row * COLUMNS + column) * sizeof(char) * 2;
     
-    if (character == '\n') {
-        newLine();
-    } else if (character == '\t') {
-        for (int i = 0; i < TAB_WIDTH; i++) {
-            print(' ', color);
-        }
-    } else {
-        *video++ = character;
-        *video++ = color;
-        column++;
+    switch(character) {
+        case '\n':
+            newLine();
+            break;
+        case '\t':
+            for (int i = 0; i < TAB_WIDTH; i++) {
+                print(' ', color);
+            }
+            break;
+        case '\b':
+            video -= 2;
+            *(uint16_t*)video = blank;
+            column--;
+            if (column < 0) {
+                column = COLUMNS;
+                row--;
+            }
+            break;
+        default:
+            *video++ = character;
+            *video++ = color;
+            column++;
     }
 
     if (column > COLUMNS) {
@@ -155,8 +166,7 @@ void println(
 
 void clearScreen() {
     enterCritical();
-    uint16_t blank = 0x20 | WHITE << 8;
-
+    
     volatile char* video = (volatile char*) VIDEO_POSITION;
     memset((uint16_t*)video, blank, 80 * 25);
     row = 0;

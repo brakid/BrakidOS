@@ -31,8 +31,8 @@
 #include "types.h"
 #include "string.h"
 
-extern byte row;
-extern byte column;
+extern int row;
+extern int column;
 
 void clearScreen();
 void print(
