@@ -33,9 +33,9 @@ void initPrograms() {
     idleProgram = initProgram(0, AUTOSTART, idleFunction);
 
     programList = createList();
-    append(programList, initProgram(1, AUTOSTART, program1Function));
+    append(programList, initProgram(1, MANUAL, program1Function));
     append(programList, initProgram(2, AUTOSTART, program2Function));
-    append(programList, initProgram(3, AUTOSTART, program3Function));
+    append(programList, initProgram(3, MANUAL, program3Function));
     leaveCritical();
 }
 

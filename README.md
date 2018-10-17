@@ -18,9 +18,9 @@ Operating system experiment
   * idle process (picked if no other task is ready)
 * garbage collector to free memory after processes have finished
 * utility methods: number -> string, string -> number
+* task manager to start new processes (select a program -> create a running process)
 
 ## TODOs:
-* task manager to start new processes (select a program -> create a running process)
 * file system
 
 The kernel will be built into a floppy disk like format. It comes with its own rudimentary bootloader that initializes the GDT, enables the A20 gate and loads the rest of the kernel from floppy disk.

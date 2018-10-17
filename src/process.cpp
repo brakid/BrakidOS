@@ -58,7 +58,7 @@ void cleanupProcess(Process* process) {
     print("? ");
     println(removed ? "yes" : "no");
     //free memory
-    //freeProcessMemory(process->processId);
+    freeProcessMemory(process->processId);
     leaveCritical();
 }
 

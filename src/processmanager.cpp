@@ -73,11 +73,11 @@ void startProcessManager() {
         println("No processes to run");
         currentProcess = getIdleProcess();
     } else {    
-       /* for (int index = 0; index < size(processes); index++) {
+        for (int index = 0; index < size(processes); index++) {
             Process* process = (Process*)get(processes, index);
             startProcess(process);
         }
-        currentProcess = (Process*)get(processes, 0);*/
+        currentProcess = (Process*)get(processes, 0);
     }
     currentProcess = getIdleProcess();
     currentProcess->processState = RUNNING;
@@ -112,7 +112,7 @@ void printProcessStatus(Process* process) {
 }
 
 void printProcessState(Process* process) {
-    if (getCurrentProcessId() == process->processId) {
+    if (process->processState == RUNNING) {
         print("*");
     } else {
         print(" ");
@@ -247,9 +247,9 @@ void showProcessManager() {
     bool isExit = false;
     char* string = (char*)malloc(100);
     
-    //clearScreen();
-    //println("          =========================");
-    //println("          *    Process Manager    *");
+    clearScreen();
+    println("          =========================");
+    println("          *     Task Manager      *");
     println("          ========================="); 
     while(!isExit) {
         printOverview();
